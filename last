@@ -1,0 +1,100 @@
+// Assume $mysqli is your MySQL database connection
+
+// Fetch student records with their metadata
+$query = "SELECT s.id AS student_id, 
+                 s.email AS email, 
+                 s.created_date AS student_created_date, 
+                 m1.meta_value AS name, 
+                 m2.meta_value AS address
+          FROM student s
+          LEFT JOIN student_meta m1 ON s.id = m1.sid AND m1.meta_key = 'Name'
+          LEFT JOIN student_meta m2 ON s.id = m2.sid AND m2.meta_key = 'Address'
+          WHERE s.id IN (SELECT DISTINCT sid FROM student_meta)";
+
+$result = $mysqli->query($query);
+
+if ($result && $result->num_rows > 0) {
+    // Display headers
+    echo "<table border='1'>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Email</th>
+                <th>Created Date</th>
+            </tr>";
+
+    // Display data
+    while ($row = $result->fetch_assoc()) {
+        echo "<tr>";
+        echo "<td>" . $row['student_id'] . "</td>";
+        echo "<td>" . $row['name'] . "</td>";
+        echo "<td>" . $row['address'] . "</td>";
+        echo "<td>" . $row['email'] . "</td>";
+        echo "<td>" . $row['student_created_date'] . "</td>";
+        echo "</tr>";
+    }
+
+    echo "</table>";
+} else {
+    echo "No records found";
+}
+
+// Free result set
+$result->free_result();
+
+// Close connection
+$mysqli->close();
+
+
+
+<?php
+// Assuming you have fetched data from the database into $studentData and $studentMetaData arrays
+
+// Sample data (Replace this with actual data fetched from the database)
+$studentData = [
+    ['id' => 1, 'email' => 'a@gmailcom', 'created_date' => 'today_date'],
+    ['id' => 2, 'email' => 'b@gmailcom', 'created_date' => 'today_date']
+];
+
+$studentMetaData = [
+    ['id' => 1, 'meta_key' => 'Name', 'meta_value' => 'surendra', 'sid' => 1, 'created_date' => 'today_date'],
+    ['id' => 2, 'meta_key' => 'Address', 'meta_value' => 'mumbai', 'sid' => 1, 'created_date' => 'today_date'],
+    ['id' => 3, 'meta_key' => 'Name', 'meta_value' => 'suma', 'sid' => 2, 'created_date' => 'today_date'],
+    ['id' => 4, 'meta_key' => 'Address', 'meta_value' => 'chennai', 'sid' => 2, 'created_date' => 'today_date']
+];
+
+// Creating a map of student meta data
+$metaMap = [];
+foreach ($studentMetaData as $meta) {
+    $sid = $meta['sid'];
+    if (!isset($metaMap[$sid])) {
+        $metaMap[$sid] = [];
+    }
+    $metaMap[$sid][$meta['meta_key']] = $meta['meta_value'];
+}
+
+// Displaying the table
+echo "<table border='1'>
+        <tr>
+            <th>id</th>
+            <th>name</th>
+            <th>address</th>
+            <th>email</th>
+            <th>created_date</th>
+        </tr>";
+foreach ($studentData as $student) {
+    $sid = $student['id'];
+    $name = isset($metaMap[$sid]['Name']) ? $metaMap[$sid]['Name'] : '';
+    $address = isset($metaMap[$sid]['Address']) ? $metaMap[$sid]['Address'] : '';
+
+    echo "<tr>
+            <td>{$student['id']}</td>
+            <td>{$name}</td>
+            <td>{$address}</td>
+            <td>{$student['email']}</td>
+            <td>{$student['created_date']}</td>
+          </tr>";
+}
+echo "</table>";
+?>
