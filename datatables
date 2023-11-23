@@ -1,1 +1,96 @@
 
+<?php
+// Fetch Students data from the database and format it for DataTables
+
+// DB Connection
+include 'connection.php';
+
+// Fetch data
+$query = "SELECT id, email FROM student";
+$result = $conn->query($query);
+
+$data = array();
+while ($row = $result->fetch_assoc()) {
+    $data[] = $row;
+}
+
+// Prepare JSON response
+$response = array(
+    "draw" => 1,
+    "recordsTotal" => count($data),
+    "recordsFiltered" => count($data),
+    "data" => $data
+);
+
+echo json_encode($response);
+?>
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Data</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+</head>
+<body>
+<table id="studentTable" class="display" style="width:100%">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Email</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<form id="addStudentForm">
+    <input type="text" id="email" name="email" placeholder="Email">
+    <button type="submit">Add</button>
+</form>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script>
+$(document).ready(function() {
+    $('#studentTable').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": "test.php",
+        "columns": [
+            { "data": "id" },
+            { "data": "email" }
+        ]
+    });
+});
+
+$('#searchForm').submit(function(e) {
+    e.preventDefault();
+    $.ajax({
+        type: "POST",
+        url: "search_students.php",
+        data: $(this).serialize(),
+        success: function(response) {
+            $('#studentTable').DataTable().ajax.reload();
+        }
+    });
+});
+
+
+    </script>
+    <script>
+        $('#addStudentForm').submit(function(e) {
+    e.preventDefault();
+    $.ajax({
+        type: "POST",
+        url: "add_student.php",
+        data: $(this).serialize(),
+        success: function(response) {
+            $('#studentTable').DataTable().ajax.reload();
+        }
+    });
+});
+
+    </script>
+</body>
+</html>
