@@ -1,0 +1,50 @@
+<?php
+require_once 'connection.php';
+// Your database connection code here
+
+// Assuming you have received the specific student ID from somewhere, for example:
+$student_id = 1; // Change this to the desired student ID
+
+// Fetching data from the database
+$query = "SELECT s.id, 
+                 m1.meta_value AS name, 
+                 m2.meta_value AS address, 
+                 s.email, 
+                 s.created_date
+          FROM student AS s
+          LEFT JOIN student_meta AS m1 ON s.id = m1.sid AND m1.meta_key = 'Name'
+          LEFT JOIN student_meta AS m2 ON s.id = m2.sid AND m2.meta_key = 'Address'";
+    
+
+$result = mysqli_query($conn, $query);
+
+// Checking if records exist
+if (mysqli_num_rows($result) > 0) {
+    // Outputting the HTML table
+    echo "<table border='1'>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Email</th>
+                <th>Created Date</th>
+            </tr>";
+
+    while ($row = mysqli_fetch_array($result)) {
+        echo "<tr>
+                <td>{$row['id']}</td>
+                <td>{$row['name']}</td>
+                <td>{$row['address']}</td>
+                <td>{$row['email']}</td>
+                <td>{$row['created_date']}</td>
+              </tr>";
+    }
+
+    echo "</table>";
+} else {
+    echo "No records found.";
+}
+
+// Close the database connection
+mysqli_close($conn);
+?>
