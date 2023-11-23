@@ -1,0 +1,45 @@
+<?php
+require_once 'connection.php';
+
+$query = "SELECT s.id, 
+                 MAX(CASE WHEN sm.meta_key = 'Name' THEN sm.meta_value END) as name,
+                 MAX(CASE WHEN sm.meta_key = 'Address' THEN sm.meta_value END) as address,
+                 s.email,
+                 s.created_date as student_created_date
+          FROM student s
+          LEFT JOIN student_meta sm ON s.id = sm.sid
+          GROUP BY s.id, s.email, s.created_date";
+    
+
+$result = mysqli_query($conn, $query);
+
+// Checking if records exist
+if (mysqli_num_rows($result) > 0) {
+    // Outputting the HTML table
+    echo "<table border='1'>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Email</th>
+                <th>Created Date</th>
+            </tr>";
+
+    while ($row = mysqli_fetch_assoc($result)) {
+        echo "<tr>
+                <td>{$row['id']}</td>
+                <td>{$row['name']}</td>
+                <td>{$row['address']}</td>
+                <td>{$row['email']}</td>
+          
+              </tr>";
+    }
+
+    echo "</table>";
+} else {
+    echo "No records found.";
+}
+
+// Close the database connection
+mysqli_close($conn);
+?>
