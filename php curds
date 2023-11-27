@@ -1,0 +1,142 @@
+class DatabaseHandler {
+    private $dbConnection;
+
+    public function __construct($host, $username, $password, $database) {
+        // Establish database connection
+        $this->dbConnection = new mysqli($host, $username, $password, $database);
+
+        // Check connection
+        if ($this->dbConnection->connect_error) {
+            die("Connection failed: " . $this->dbConnection->connect_error);
+        }
+    }
+
+    public function insert($tableName, $data) {
+        $columns = implode(', ', array_keys($data));
+        $values = "'" . implode("', '", array_values($data)) . "'";
+
+        $sql = "INSERT INTO $tableName ($columns) VALUES ($values)";
+
+        if ($this->dbConnection->query($sql) === TRUE) {
+            return "New record created successfully";
+        } else {
+            return "Error: " . $sql . "<br>" . $this->dbConnection->error;
+        }
+    }
+
+    public function update($tableName, $data, $condition) {
+        $updateValues = '';
+        foreach ($data as $key => $value) {
+            $updateValues .= "$key = '$value', ";
+        }
+        $updateValues = rtrim($updateValues, ', ');
+
+        $sql = "UPDATE $tableName SET $updateValues WHERE $condition";
+
+        if ($this->dbConnection->query($sql) === TRUE) {
+            return "Record updated successfully";
+        } else {
+            return "Error: " . $sql . "<br>" . $this->dbConnection->error;
+        }
+    }
+
+    public function delete($tableName, $condition) {
+        $sql = "DELETE FROM $tableName WHERE $condition";
+
+        if ($this->dbConnection->query($sql) === TRUE) {
+            return "Record deleted successfully";
+        } else {
+            return "Error: " . $sql . "<br>" . $this->dbConnection->error;
+        }
+    }
+
+    public function select($tableName, $columns = '*', $condition = '') {
+        $sql = "SELECT $columns FROM $tableName";
+        if (!empty($condition)) {
+            $sql .= " WHERE $condition";
+        }
+
+        $result = $this->dbConnection->query($sql);
+        if ($result->num_rows > 0) {
+            return $result->fetch_all(MYSQLI_ASSOC);
+        } else {
+            return "No results found";
+        }
+    }
+
+    public function closeConnection() {
+        $this->dbConnection->close();
+    }
+}
+
+
+class DatabaseHandler {
+    private $dbConnection;
+
+    public function __construct($host, $username, $password, $database) {
+        // Establish database connection
+        $this->dbConnection = new mysqli($host, $username, $password, $database);
+
+        // Check connection
+        if ($this->dbConnection->connect_error) {
+            die("Connection failed: " . $this->dbConnection->connect_error);
+        }
+    }
+
+    public function insert($tableName, $data) {
+        $columns = implode(', ', array_keys($data));
+        $values = "'" . implode("', '", array_values($data)) . "'";
+
+        $sql = "INSERT INTO $tableName ($columns) VALUES ($values)";
+
+        if ($this->dbConnection->query($sql) === TRUE) {
+            return "New record created successfully";
+        } else {
+            return "Error: " . $sql . "<br>" . $this->dbConnection->error;
+        }
+    }
+
+    public function update($tableName, $data, $condition) {
+        $updateValues = '';
+        foreach ($data as $key => $value) {
+            $updateValues .= "$key = '$value', ";
+        }
+        $updateValues = rtrim($updateValues, ', ');
+
+        $sql = "UPDATE $tableName SET $updateValues WHERE $condition";
+
+        if ($this->dbConnection->query($sql) === TRUE) {
+            return "Record updated successfully";
+        } else {
+            return "Error: " . $sql . "<br>" . $this->dbConnection->error;
+        }
+    }
+
+    public function delete($tableName, $condition) {
+        $sql = "DELETE FROM $tableName WHERE $condition";
+
+        if ($this->dbConnection->query($sql) === TRUE) {
+            return "Record deleted successfully";
+        } else {
+            return "Error: " . $sql . "<br>" . $this->dbConnection->error;
+        }
+    }
+
+    public function select($tableName, $columns = '*', $condition = '') {
+        $sql = "SELECT $columns FROM $tableName";
+        if (!empty($condition)) {
+            $sql .= " WHERE $condition";
+        }
+
+        $result = $this->dbConnection->query($sql);
+        if ($result->num_rows > 0) {
+            return $result->fetch_all(MYSQLI_ASSOC);
+        } else {
+            return "No results found";
+        }
+    }
+
+    public function closeConnection() {
+        $this->dbConnection->close();
+    }
+}
