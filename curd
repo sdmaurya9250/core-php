@@ -1,6 +1,113 @@
 class DynamicCRUD {
     private $tableName;
     private $columns;
+    private $pdo;
+
+    // Constructor to initialize the table name, columns, and database connection
+    public function __construct($tableName, $columns, $pdo) {
+        $this->tableName = $tableName;
+        $this->columns = $columns;
+        $this->pdo = $pdo;
+    }
+
+    // Function to add a new row to the table
+    public function createRow($data) {
+        // Check if provided data has all required columns
+        if (count(array_diff_key(array_flip($this->columns), $data)) !== 0) {
+            return "Missing columns in provided data";
+        }
+
+        // Generate column and value strings for SQL query
+        $columnsStr = implode(', ', array_keys($data));
+        $values = array_values($data);
+        $placeholders = rtrim(str_repeat('?, ', count($values)), ', ');
+
+        // Perform the SQL query to insert a new row
+        $sql = "INSERT INTO {$this->tableName} ({$columnsStr}) VALUES ({$placeholders})";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($values);
+
+        return "Row added successfully";
+    }
+
+    // Function to read rows from the table
+    public function readRows() {
+        // Perform the SQL query to select all rows
+        $sql = "SELECT * FROM {$this->tableName}";
+        $stmt = $this->pdo->query($sql);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Function to update a row in the table
+    public function updateRow($id, $data) {
+        // Check if provided data has all required columns
+        if (count(array_diff_key(array_flip($this->columns), $data)) !== 0) {
+            return "Missing columns in provided data";
+        }
+
+        // Generate update string for SQL query
+        $updateStr = '';
+        foreach ($data as $key => $value) {
+            $updateStr .= "$key = ?, ";
+        }
+        $updateStr = rtrim($updateStr, ', ');
+
+        // Prepare values for the update query
+        $values = array_values($data);
+        $values[] = $id;
+
+        // Perform the SQL query to update the row
+        // Assuming 'id' is the primary key column
+        $sql = "UPDATE {$this->tableName} SET {$updateStr} WHERE id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($values);
+
+        return "Row updated successfully";
+    }
+
+    // Function to delete a row from the table
+    public function deleteRow($id) {
+        // Perform the SQL query to delete the row
+        // Assuming 'id' is the primary key column
+        $sql = "DELETE FROM {$this->tableName} WHERE id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$id]);
+
+        return "Row deleted successfully";
+    }
+}
+
+// Establish database connection (replace with your actual database credentials)
+$host = 'localhost';
+$dbName = 'your_database_name';
+$username = 'your_username';
+$password = 'your_password';
+
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$dbName", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Error: " . $e->getMessage());
+}
+
+// Usage example:
+$columns = ['name', 'age', 'email']; // Define your table columns
+$tableName = 'example_table'; // Define your table name
+
+// Create an instance of DynamicCRUD class
+$dynamicCRUD = new DynamicCRUD($tableName, $columns, $pdo);
+
+// Example usage of CRUD operations
+$dynamicCRUD->createRow(['name' => 'John', 'age' => 30, 'email' => 'john@example.com']);
+$rows = $dynamicCRUD->readRows();
+$dynamicCRUD->updateRow(1, ['name' => 'Jane']); // Assuming updating the row with ID 1
+$dynamicCRUD->deleteRow(2); // Assuming deleting the row with ID 2
+
+
+class DynamicCRUD {
+    private $tableName;
+    private $columns;
 
     // Constructor to initialize the table name and columns
     public function __construct($tableName, $columns) {
