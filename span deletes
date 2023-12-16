@@ -1,0 +1,57 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bootstrap Table Example</title>
+  <!-- Add Bootstrap CSS CDN link -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+  <h2>Bootstrap Table Example</h2>
+  
+<!-- Html click function customerimg2 child tags span remove.
+
+so there are two span tag one span content i tags so if any span tag content any tags so do not delete that.
+other content noting tag that one should deletes -->
+
+<div class="customerimg2">
+
+    <span>Hello</span>
+    <span><i>hey</i></span>
+    <span><b>Bold</b></span>
+    <span>Hello</span>
+  </div>
+
+  <br>
+  <button onclick="Test()" class="btn btn-primary">Click me</button>
+  
+  <script>
+    function Test() {
+      const spans = document.querySelectorAll('.customerimg2 span');
+      spans.forEach(span => {
+        if (span.children.length === 0) {
+          span.remove();
+        }
+      });
+    }
+  </script>
+  
+
+
+<!-- Add Bootstrap JS and jQuery CDN links (required for some Bootstrap features) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- <script>
+function Test(){
+
+
+}
+</script> -->
+</body>
+</html
+
