@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+</head>
+<body>
+
+<div class="customerimg" style="background-color:red">
+    <img src="images/about-md.jpg" alt="Profile Image">
+</div>
+<!-- <div class="customerimg" style="background-color:red">
+   <span>SU</span>
+</div> -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+        $(document).ready(function() {
+            $('.customerimg').each(function() {
+                if ($(this).find('img').length > 0) {
+                    $(this).css('background-color', 'none');
+                } else if ($(this).find('span').length > 0) {
+                    // Keep the background color (no action needed)
+                }
+            });
+        });
+    </script>
+</body>x
+</html>
+<style>
+        .customerimg {
+            width: 200px;
+            height: 200px;
+           
+            border: 1px solid #000;
+        }
+    </style>
